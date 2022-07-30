@@ -1,0 +1,27 @@
+apiVersion: v1
+data:
+  mapRoles: |
+    - groups:
+      - system:bootstrappers
+      - system:nodes
+      rolearn: arn:aws:iam::your-aws-account-id:role/eksctl-basic-eks-cluster-nodegrou-NodeInstanceRole-8Y2H8QXKS85C
+      username: system:node:{{EC2PrivateDNSName}}
+  mapUsers: |
+    - userarn: arn:aws:iam::your-aws-account-id:user/eks-admin-user
+      username: eks-admin-user
+      groups:
+        - system:masters
+    - userarn: arn:aws:iam::your-aws-account-id:user/eks-user
+      username: eks-user
+      groups:
+        - eks-user-role
+kind: ConfigMap
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"mapRoles":"- groups:\n  - system:bootstrappers\n  - system:nodes\n  rolearn: arn:aws:iam::your-aws-account-id:role/eksctl-basic-eks-cluster-nodegrou-NodeInstanceRole-8Y2H8QXKS85C\n  username: system:node:{{EC2PrivateDNSName}}\n","mapUsers":"- userarn: arn:aws:iam::your-aws-account-id:user/eks-admin-user\n  username: eks-admin-user\n  groups:\n    - system:masters\n"},"kind":"ConfigMap","metadata":{"annotations":{},"creationTimestamp":"2022-07-25T20:56:49Z","name":"aws-auth","namespace":"kube-system","resourceVersion":"240107","uid":"552043f0-d37f-4bab-9fc5-84c752b5bf18"}}
+  creationTimestamp: "2022-07-25T20:56:49Z"
+  name: aws-auth
+  namespace: kube-system
+  resourceVersion: "241403"
+  uid: 552043f0-d37f-4bab-9fc5-84c752b5bf18

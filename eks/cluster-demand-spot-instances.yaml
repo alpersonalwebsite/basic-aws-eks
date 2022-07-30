@@ -1,0 +1,19 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: basic-eks-cluster
+  region: us-west-1
+
+nodeGroups:
+  - name: ng-demand-spot-instances
+    minSize: 3
+    maxSize: 5
+    instancesDistribution:
+      maxPrice: 0.2
+      instanceTypes: ["t2.small", "t3.small"]
+      onDemandBaseCapacity: 0
+      # with this configuration 50% would be on demand, 50% spot instances
+      onDemandPercentageAboveBaseCapacity: 50
+    ssh:
+      publicKeyName: EKSProjectEC2KeyPair

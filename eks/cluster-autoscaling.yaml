@@ -1,0 +1,21 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: basic-eks-cluster
+  region: us-west-1
+
+nodeGroups:
+  - name: ng-2
+    instanceType: t2.small
+    desiredCapacity: 2
+    maxSize: 5
+    availabilityZones: ["us-west-1a", "us-west-1c"]
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+    labels:
+      nodegroup-type: autoscaling
+      instance-type: onDemand
+    ssh:
+      publicKeyName: EKSProjectEC2KeyPair
