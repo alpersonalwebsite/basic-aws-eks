@@ -1,0 +1,102 @@
+Description: eks-project
+
+Parameters:
+  EKSUserName:
+    Description: The AWS Admin user
+    Type: String
+    Default: 'user123'
+    NoEcho: true
+
+  EKSAdminUserName:
+    Description: The username for EKS Admin user
+    Type: String
+    Default: 'eks-admin-user'
+    NoEcho: true
+
+  EKSRegularUserName:
+    Description: The username for EKS Regular user
+    Type: String
+    Default: 'eks-user'
+    NoEcho: true
+
+Resources:
+
+  EKSFullAccess:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: EKS Full access policy
+      ManagedPolicyName: EKSFullAccess
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'eks:*'
+            Resource: '*'
+
+  CFNFullAccess:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: CFN Full access policy
+      ManagedPolicyName: CFNFullAccess
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cloudformation:*'
+            Resource: '*'
+
+  EKSUser:
+    Type: AWS::IAM::User
+    Properties: 
+      LoginProfile: 
+        Password: '{{resolve:ssm-secure:EKSUserPassword:1}}'
+        PasswordResetRequired: true
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/IAMFullAccess
+        - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+        - arn:aws:iam::aws:policy/AmazonVPCFullAccess
+        - !Ref CFNFullAccess
+        - !Ref EKSFullAccess
+      Tags: 
+        - Key: 'Project'
+          Value: 'EKS'
+      UserName: !Ref EKSUserName
+
+  EKSAdminUser:
+    Type: AWS::IAM::User
+    Properties: 
+      Tags: 
+        - Key: 'Project'
+          Value: 'EKS'
+      UserName: !Ref EKSAdminUserName
+
+  EKSRegularUser:
+    Type: AWS::IAM::User
+    Properties: 
+      Tags: 
+        - Key: 'Project'
+          Value: 'EKS'
+      UserName: !Ref EKSRegularUserName
+
+  EKSRole: 
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Role for EKS
+      RoleName: EKSRole
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+      AssumeRolePolicyDocument: 
+        Version: '2012-10-17'
+        Statement: 
+          - 
+            Effect: 'Allow'
+            Principal: 
+              Service: 
+                - 'eks.amazonaws.com'
+            Action: 
+              - 'sts:AssumeRole'
+      Tags: 
+        - Key: 'Project'
+          Value: 'EKS'
