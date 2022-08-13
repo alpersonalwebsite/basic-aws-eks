@@ -15,6 +15,15 @@ https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html
 ### Install kubectl
 https://kubernetes.io/docs/tasks/tools/
 
+### Deploy CFN template
+
+```shell
+aws cloudformation create-stack \
+  --stack-name service-support \
+  --template-body file://service-support.yml \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --region us-west-1
+```
 
 ### Save user password in parameter store
 
@@ -222,7 +231,7 @@ eksctl delete nodegroup --config-file=eks/cluster.yaml --include='ng-new-nodegro
 #### AutoScaler
 
 ```shell
- eksctl create nodegroup --config-file=eks/cluster-autoscaling.yaml
+eksctl create nodegroup --config-file=eks/cluster-autoscaling.yaml
 ```
 
 <!--
@@ -591,7 +600,7 @@ nginx                              1/1     Running   0          38s
 test-autoscaler-7db49f8dc5-c64gn   1/1     Running   0          19h
 ```
 
-#### Adding read-only user for a dedicated namescpace
+#### Adding read-only user for a dedicated namespace
 
 ##### Create namespace
 
@@ -798,12 +807,57 @@ You should see something like this...
 
 ### EKS
 
-#### Helm
+<!-- #### Helm
 
 **Uninstall Redis**
 
 ```shell
 helm uninstall redis-test
+``` -->
+
+#### Delete nodegroup
+
+This would be the same to `delete in CFN` the stack `eksctl-basic-eks-cluster-nodegroup-ng-2`
+
+```shell
+eksctl delete nodegroup --config-file=eks/cluster-autoscaling.yaml --approve 
+```
+
+Output:
+
+```
+...
+...
+...
+2022-08-09 09:57:33 [✔]  deleted 1 nodegroup(s) from cluster "basic-eks-cluster"
+```
+
+#### Delete cluster
+
+This would be the same to `delete in CFN` the stack `eksctl-basic-eks-cluster-cluster`
+
+Before doing this, be sure that there are no resources tied to the VPC: example, Security Groups.
+
+```shell
+eksctl delete cluster -f eks/cluster-autoscaling.yaml
+```
+
+Output:
+
+```shell
+2022-08-09 10:02:07 [ℹ]  deleting EKS cluster "basic-eks-cluster"
+2022-08-09 10:02:07 [ℹ]  deleted 0 Fargate profile(s)
+2022-08-09 10:02:08 [✔]  kubeconfig has been updated
+2022-08-09 10:02:08 [ℹ]  cleaning up AWS load balancers created by Kubernetes objects of Kind Service or Ingress
+2022-08-09 10:02:09 [ℹ]  1 task: { delete cluster control plane "basic-eks-cluster" [async] }
+2022-08-09 10:02:09 [ℹ]  will delete stack "eksctl-basic-eks-cluster-cluster"
+2022-08-09 10:02:09 [✔]  all cluster resources were deleted
+```
+
+#### Delete CFN tacks
+
+```shell
+aws cloudformation delete-stack --stack-name 	service-support
 ```
 
 ### Delete user password from parameter store
