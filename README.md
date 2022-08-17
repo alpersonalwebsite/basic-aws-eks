@@ -15,16 +15,6 @@ https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html
 ### Install kubectl
 https://kubernetes.io/docs/tasks/tools/
 
-### Deploy CFN template
-
-```shell
-aws cloudformation create-stack \
-  --stack-name service-support \
-  --template-body file://service-support.yml \
-  --capabilities CAPABILITY_NAMED_IAM \
-  --region us-west-1
-```
-
 ### Save user password in parameter store
 
 Add user password to parameter store:
@@ -40,6 +30,16 @@ Output:
     "Version": 1,
     "Tier": "Standard"
 }
+```
+
+### Deploy CFN template
+
+```shell
+aws cloudformation create-stack \
+  --stack-name eks-project \
+  --template-body file://eks-project.yml \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --region us-west-1
 ```
 
 ### Create EC2 Key pair
